@@ -1,20 +1,16 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 
-from userprofile.models import Profile
 from userprofile.serializers import UserBaseInfoSerializer
-from django.contrib.auth.decorators import login_required
 
 
-@api_view(['GET'])
-@login_required
-def user_base_info(request):
+class UserProfileAPIView(RetrieveAPIView):
     """
     获取当前用户的基本信息.
-    :param request:
-    :return:
     """
-    current_user = request.user
-    records = Profile.objects.get(user=current_user)
-    serializer = UserBaseInfoSerializer(records)
-    return Response(serializer.data)
+    serializer_class = UserBaseInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # 返回当前登录用户的Profile实例
+        return self.request.user.profile

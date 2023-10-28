@@ -8,6 +8,11 @@ class ArchiveListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'user',
-            'body',
             'timestamp'
         ]
+
+
+class ArchiveDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatArchive
+        fields = '__all__'
