@@ -17,4 +17,4 @@ class ChatArchive(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return
+        return str(self.body)
