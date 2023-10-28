@@ -7,12 +7,16 @@ class ChatArchive(models.Model):
     # 用户
     user = models.ForeignKey(
         User,
-        null=True,
+        null=False,
         on_delete=models.CASCADE,
         related_name='ArchiveToUser'
     )
-    # 聊天内容
-    body = models.JSONField()
+    # 输入信息
+    body = models.TextField(max_length=100)
+    # glm生成的提示词
+    prompt = models.TextField(blank=True)
+    # 结果
+    res = models.TextField(blank=True)
     # 时间戳
     timestamp = models.DateTimeField(default=timezone.now)
 

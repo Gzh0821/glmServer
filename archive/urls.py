@@ -6,5 +6,7 @@ app_name = 'archive'
 
 urlpatterns = [
     path('list', views.ArchiveListView.as_view(), name='list'),
-    path('detail/<int:pk>/', views.ArchiveDetailView.as_view(), name='detail')
+    path('detail/<int:pk>/', views.ArchiveDetailView.as_view(), name='detail'),
+    path('create/', views.create_new_chat, name='create'),
+    # path('new/', views.CreateNewChatView.as_view(), name='new'),
 ]
