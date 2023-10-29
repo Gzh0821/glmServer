@@ -7,7 +7,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from archive.example import generate_text
+from archive.invoke_simulate import generate_text, generate_picture
 from archive.models import ChatArchive
 from archive.serializers import ArchiveListSerializer, ArchiveDetailSerializer
 from userprofile.models import GLMUser
@@ -77,6 +77,8 @@ def create_new_chat(request):
         serializer.save(user=request.user)
         prompt = generate_text(body)
         serializer.save(prompt=prompt)
+        res = generate_picture(prompt)
+        serializer.save(res=res)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
