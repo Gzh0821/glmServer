@@ -17,5 +17,8 @@ class UserProfileAPIView(RetrieveAPIView):
 
 
 class UserRegistrationView(CreateAPIView):
+    """
+    注册一个新用户.
+    """
     serializer_class = UserUpdateSerializer
     permission_classes = [AllowAny]
