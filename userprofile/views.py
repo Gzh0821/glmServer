@@ -1,7 +1,7 @@
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from userprofile.serializers import UserBaseInfoSerializer
+from userprofile.serializers import UserBaseInfoSerializer, UserUpdateSerializer
 
 
 class UserProfileAPIView(RetrieveAPIView):
@@ -14,3 +14,8 @@ class UserProfileAPIView(RetrieveAPIView):
     def get_object(self):
         # 返回当前登录用户的Profile实例
         return self.request.user.profile
+
+
+class UserRegistrationView(CreateAPIView):
+    serializer_class = UserUpdateSerializer
+    permission_classes = [AllowAny]

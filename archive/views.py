@@ -1,22 +1,21 @@
-from asgiref.sync import async_to_sync
 from django.contrib.auth.decorators import login_required
-
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from archive.example import generate_text
 from archive.models import ChatArchive
 from archive.serializers import ArchiveListSerializer, ArchiveDetailSerializer
 from userprofile.models import Profile
 
-from archive.example import generate_text
-
 
 class ArchiveListView(ListAPIView):
     """
-    获取当前用户的所有生成记录.
+    获取当前用户的所有生成记录列表.
     """
     permission_classes = [IsAuthenticated]
     serializer_class = ArchiveListSerializer
@@ -26,6 +25,9 @@ class ArchiveListView(ListAPIView):
 
 
 class ArchiveDetailView(RetrieveAPIView):
+    """
+    获取指定id的详细生成记录.
+    """
     queryset = ChatArchive.objects.all()
     serializer_class = ArchiveDetailSerializer
     permission_classes = [IsAuthenticated]
@@ -41,9 +43,27 @@ class ArchiveDetailView(RetrieveAPIView):
             )
 
 
+@swagger_auto_schema(
+    method='POST',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['body'],
+        properties={
+            'body': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ),
+    responses={
+        201: openapi.Response('', ArchiveDetailSerializer),
+        400: openapi.Response('', ArchiveDetailSerializer),
+        402: openapi.Response('Account Not enough balance.'),
+    }
+)
 @api_view(['POST'])
 @login_required
 def create_new_chat(request):
+    """
+    创建新的生成对话.
+    """
     user_profile = Profile.objects.get(user=request.user)
     if user_profile.balance <= 0:
         return Response(
