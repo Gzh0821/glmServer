@@ -1,34 +1,30 @@
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from userprofile.models import Profile
+from userprofile.models import GLMUser
 
 
 class UserBaseInfoSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
-    id = serializers.IntegerField(source='user.id')
-
     class Meta:
-        model = Profile
+        model = GLMUser
         fields = [
             'username',
             'id',
             'balance',
-            'is_premium_user'
+            'is_premium_user',
         ]
         read_only_fields = [
             'username',
             'id',
             'balance',
-            'is_premium_user'
+            'is_premium_user',
         ]
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = GLMUser
         fields = [
             'id',
             'username',
@@ -44,7 +40,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        user = GLMUser.objects.create_user(**validated_data)
         return user
 
     def update(self, instance, validated_data):

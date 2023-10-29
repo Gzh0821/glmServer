@@ -13,7 +13,7 @@ class UserProfileAPIView(RetrieveAPIView):
 
     def get_object(self):
         # 返回当前登录用户的Profile实例
-        return self.request.user.profile
+        return self.request.user
 
 
 class UserRegistrationView(CreateAPIView):

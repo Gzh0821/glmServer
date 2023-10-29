@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from archive.example import generate_text
 from archive.models import ChatArchive
 from archive.serializers import ArchiveListSerializer, ArchiveDetailSerializer
-from userprofile.models import Profile
+from userprofile.models import GLMUser
 
 
 class ArchiveListView(ListAPIView):
@@ -64,7 +64,7 @@ def create_new_chat(request):
     """
     创建新的生成对话.
     """
-    user_profile = Profile.objects.get(user=request.user)
+    user_profile = GLMUser.objects.get(id=request.user.id)
     if user_profile.balance <= 0:
         return Response(
             {"error": "Payment Required."},

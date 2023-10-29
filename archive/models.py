@@ -1,12 +1,16 @@
+import uuid
+
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+
+from userprofile.models import GLMUser
 
 
 class ChatArchive(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid1, editable=False)
     # 用户
     user = models.ForeignKey(
-        User,
+        GLMUser,
         null=False,
         on_delete=models.CASCADE,
         related_name='ArchiveToUser'
