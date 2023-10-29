@@ -23,6 +23,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/archive/', include('archive.urls', namespace='archive')),
     path('api/user/', include('userprofile.urls', namespace='userprofile')),
+    path('api/admin/', include('adminfunc.urls', namespace='adminfunc')),
     path('temp/auth/', include('rest_framework.urls')),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -1,11 +1,8 @@
 import requests
 from asgiref.sync import async_to_sync
+from django.conf import settings
 from transformers import AutoModel, AutoTokenizer
 
-MODEL_PATH = "THUDM/"
-MODEL_NAME = "chatglm2-6b-int4"
-SDW_URL = "http://127.0.0.1:7860"
-SD_MODEL_NAME = "AnythingV5Ink_ink.safetensors [a1535d0a42]"
 TEMPLATE = '''
 以下提示用于指导Al绘画模型创建图像。它们包括人物外观、背景、颜色和光影效果，以及图像的主题和风格等各种细节。这些提示的格式通常包括带权重的数字括号，用于指定某些细节的重要性或强调。例如，"(masterpiece:1.4)"表示作品的质量非常重要。以下是三个示例：
 1. (8k, RAW photo, best quality, masterpiece:1.2),(realistic, photo-realistic:1.37), ultra-detailed, 1girl, cute, solo, beautiful detailed sky, detailed cafe, night, sitting, dating, (nose blush), (smile:1.1),(closed mouth), medium breasts, beautiful detailed eyes, (collared shirt:1.1), bowtie, pleated skirt, (short hair:1.2), floating hair, ((masterpiece)), ((best quality)),
@@ -22,14 +19,14 @@ PAYLOAD_TEMPLATE = {
     "height": 512,
     'sampler_index': 'DPM++ SDE',
     "cfg_scale": 7,
-    "override_settings": {"sd_model_checkpoint": SD_MODEL_NAME},
+    "override_settings": {"sd_model_checkpoint": settings.SD_MODEL_NAME},
     "restore_faces": "false",
     "tiling": "false",
     "denoising_strength": 0.75,
 }
-tokenizer = AutoTokenizer.from_pretrained(f"{MODEL_PATH}{MODEL_NAME}", trust_remote_code=True)
-model = AutoModel.from_pretrained(f"{MODEL_PATH}{MODEL_NAME}",
-                                  trust_remote_code=True).cuda()
+
+tokenizer = AutoTokenizer.from_pretrained(settings.GLM_MODEL_PATH, trust_remote_code=True)
+model = AutoModel.from_pretrained(settings.GLM_MODEL_PATH, trust_remote_code=True).cuda()
 model = model.eval()
 
 
@@ -44,6 +41,6 @@ async def generate_text(input_text: str) -> str:
 async def generate_picture(prompt: str) -> str:
     payload = PAYLOAD_TEMPLATE.copy()
     payload['prompt'] = prompt
-    response = requests.post(url=f'{SDW_URL}/sdapi/v1/txt2img', json=payload)
+    response = requests.post(url=f'{settings.SDW_URL}/sdapi/v1/txt2img', json=payload)
     r = response.json()
     return r['images'][0]

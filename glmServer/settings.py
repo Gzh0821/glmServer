@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'channels',
     'rest_framework',
+    'rest_framework_simplejwt',
     'drf_yasg',
     'archive',
-    'userprofile'
+    'userprofile',
+    'adminfunc',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +130,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+GLM_MODEL_PATH = "THUDM/chatglm2-6b-int4"
+SDW_URL = "http://127.0.0.1:7860"
+SD_MODEL_NAME = "AnythingV5Ink_ink.safetensors [a1535d0a42]"

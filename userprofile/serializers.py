@@ -22,7 +22,7 @@ class UserBaseInfoSerializer(serializers.ModelSerializer):
         ]
 
 
-class UserUpdateSerializer(serializers.ModelSerializer):
+class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = GLMUser
         fields = [

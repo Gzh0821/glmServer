@@ -67,7 +67,7 @@ def create_new_chat(request):
     user_profile = GLMUser.objects.get(id=request.user.id)
     if user_profile.balance <= 0:
         return Response(
-            {"error": "Payment Required."},
+            {"detail": "Not enough account balance,Payment Required."},
             status=status.HTTP_402_PAYMENT_REQUIRED
         )
     body = request.data.get('body')
