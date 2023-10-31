@@ -3,7 +3,8 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -82,6 +83,7 @@ def create_new_chat(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # class CreateNewChatView(CreateAPIView):
 #     queryset = ChatArchive.objects.all()
 #     serializer_class = ArchiveDetailSerializer
@@ -102,3 +104,17 @@ def create_new_chat(request):
 #             self.perform_create(serializer)
 #         headers = self.get_success_headers(serializer.data)
 #         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+class ArchiveDeleteView(DestroyAPIView):
+    """
+    删除指定id的生成记录.
+    """
+    queryset = ChatArchive.objects.all()
+    serializer_class = ArchiveDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        if self.request.user == instance.user:
+            instance.delete()
+        else:
+            raise PermissionDenied("You do not have permission to delete this archive.")
