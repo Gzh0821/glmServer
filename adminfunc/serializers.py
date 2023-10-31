@@ -24,14 +24,12 @@ class AdminUserSettingSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'is_superuser',
+            'is_staff',
             'date_joined',
         ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
-    def update(self, instance, validated_data):
-        if 'password' in validated_data:
-            password = validated_data.pop('password')
-            instance.set_password(password)
-        return super().update(instance, validated_data)
+
+

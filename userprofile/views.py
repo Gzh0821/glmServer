@@ -1,7 +1,7 @@
-from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from userprofile.serializers import UserBaseInfoSerializer, UserRegisterSerializer
+from userprofile.serializers import UserBaseInfoSerializer, UserRegisterSerializer, UserChangePasswordSerializer
 
 
 class UserProfileAPIView(RetrieveAPIView):
@@ -22,3 +22,15 @@ class UserRegistrationView(CreateAPIView):
     """
     serializer_class = UserRegisterSerializer
     permission_classes = [AllowAny]
+
+
+class UserChangePasswordView(UpdateAPIView):
+    """
+    修改用户密码.
+    """
+    serializer_class = UserChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['put']
+
+    def get_object(self):
+        return self.request.user

@@ -80,6 +80,9 @@ def create_new_chat(request):
         serializer.save(prompt=prompt)
         res = generate_picture(prompt)
         serializer.save(res=res)
+        # 扣除用户余额
+        user_profile.balance -= 1
+        user_profile.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
