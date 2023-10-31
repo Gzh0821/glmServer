@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from glmServer.views import teapot
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -21,6 +22,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('', RedirectView.as_view(url='swagger/', permanent=False)),
     path("admin/", admin.site.urls),
+    path('api/teapot/', teapot, name='teapot'),
     path('api/archive/', include('archive.urls', namespace='archive')),
     path('api/user/', include('userprofile.urls', namespace='userprofile')),
     path('api/admin/', include('adminfunc.urls', namespace='adminfunc')),
