@@ -26,7 +26,7 @@ class AdminUpdateUserView(RetrieveUpdateDestroyAPIView):
 
 class AdminUpdateUserByName(AdminUpdateUserView):
     """
-    管理员根据用户名更新某个用户的信息.PUT用于完整修改用户信息,PATCH用于修改部分信息,如仅修改用户余额或密码.
+    管理员根据用户名更新某个用户的信息.PUT用于完整修改用户信息,PATCH用于修改部分信息,如仅修改用户余额.
     """
     lookup_field = 'username'
 
