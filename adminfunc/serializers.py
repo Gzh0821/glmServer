@@ -13,7 +13,6 @@ class AdminUserSettingSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'email',
-            'password',
             'is_staff',
             'is_active',
             'date_joined',
@@ -27,9 +26,3 @@ class AdminUserSettingSerializer(serializers.ModelSerializer):
             'is_staff',
             'date_joined',
         ]
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
-
-
-
