@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from adminfunc.models import InvitationCode
 from userprofile.models import GLMUser
 
 
@@ -25,13 +26,16 @@ class UserBaseInfoSerializer(serializers.ModelSerializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    invite_code = serializers.CharField(write_only=True, required=True)
+
     class Meta:
         model = GLMUser
         fields = [
             'id',
             'username',
             'password',
-            'date_joined'
+            'date_joined',
+            'invite_code'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -42,6 +46,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        invite_code = validated_data.pop('invite_code')
+        try:
+            code = InvitationCode.objects.get(code=invite_code, is_used=False)
+            code.is_used = True
+            code.save()
+        except InvitationCode.DoesNotExist:
+            raise serializers.ValidationError("Invalid Invitation Code.")
         user = GLMUser.objects.create_user(**validated_data)
         return user
 
