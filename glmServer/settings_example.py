@@ -137,7 +137,10 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
+if not DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
+        "rest_framework.renderers.JSONRenderer",
+    )
 GLM_MODEL_PATH = "THUDM/chatglm2-6b-int4"
 SDW_URL = "http://127.0.0.1:7860"
 SD_MODEL_NAME = "AnythingV5Ink_ink.safetensors [a1535d0a42]"
