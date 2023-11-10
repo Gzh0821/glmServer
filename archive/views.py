@@ -66,7 +66,7 @@ def create_new_chat(request):
     创建新的生成对话.
     """
     user_profile = GLMUser.objects.get(id=request.user.id)
-    if user_profile.balance <= 0:
+    if user_profile.balance <= 0 and not user_profile.is_premium_user:
         return Response(
             {"detail": "Not enough account balance,Payment Required."},
             status=status.HTTP_402_PAYMENT_REQUIRED
@@ -81,7 +81,8 @@ def create_new_chat(request):
         res = generate_picture(prompt)
         serializer.save(res=res)
         # 扣除用户余额
-        user_profile.balance -= 1
+        if not user_profile.is_premium_user:
+            user_profile.balance -= 1
         user_profile.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
