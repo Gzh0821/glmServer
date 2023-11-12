@@ -70,7 +70,7 @@ class InvitationDeleteViewSet(generics.DestroyAPIView):
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        queryset = InvitationCode.objects.filter(created_by=self.request.user)
+        queryset = InvitationCode.objects.filter(created_by=self.request.user.id)
         return queryset
 
 
