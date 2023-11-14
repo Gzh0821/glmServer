@@ -1,24 +1,18 @@
+import base64
+
 import requests
 from asgiref.sync import async_to_sync
 from django.conf import settings
 from transformers import AutoModel, AutoTokenizer
+from diffusers import DiffusionPipeline
+import torch
+from io import BytesIO
 
 TEMPLATE = """
-以下提示用于指导Al绘画模型创建图像。它们包括人物外观、背景、颜色和光影效果，以及图像的主题和风格等各种细节。这些提示的格式通常包括带权重的数字括号，用于指定某些细节的重要性或强调。例如，"(masterpiece:1.4)"表示作品的质量非常重要。以下是三个示例：
-
-第一个: (1 girl, 8k, RAW photo, best quality, masterpiece:1.2),(realistic, photo-realistic:1.37), ultra-detailed, 1girl, 
-cute, solo, beautiful detailed sky, detailed cafe, night, sitting, dating, (nose blush), (smile:1.1),(closed mouth), 
-medium breasts, beautiful detailed eyes, (collared shirt:1.1), bowtie, pleated skirt, (short hair:1.2), 
-floating hair, ((masterpiece)), ((best quality)),
-
-第二个: (masterpiece, finely detailed beautiful eyes: 1.2), ultra-detailed, illustration, 1 girl, blue hair black hair, 
-japanese clothes, cherry blossoms, tori, street full of cherry blossoms, detailed background, realistic, volumetric 
-light, sunbeam, light rays, sky, cloud,
-
-第三个: highest quallity, illustration, cinematic light, ultra detailed, detailed face, (detailed eyes, best quality, 
-hyper detailed, masterpiece, (detailed face), blue hairlwhite hair, purple eyes, highest details, luminous eyes, 
-medium breats, black halo, white clothes, backlighting, (midriff:1.4), light rays, (high contrast), (colorful)
-
+以下提示用于指导Al绘画模型创建图像。它们包括外观和背景描述、颜色、图片质量，以及图像的主题和风格等各种细节。以下是三个示例:
+第一个:"Astronaut in a jungle, cold color palette, muted colors, detailed, 8k"
+第二个:"A majestic lion jumping from a big stone at night"
+第三个:"sailing ship in storm by Leonardo da Vinci"
 上面是三个提示的示例，仿照这些示例，使用英文，写一段描写如下要素的提示："""
 
 PAYLOAD_TEMPLATE = {
@@ -39,6 +33,13 @@ tokenizer = AutoTokenizer.from_pretrained(settings.GLM_MODEL_PATH, trust_remote_
 model = AutoModel.from_pretrained(settings.GLM_MODEL_PATH, trust_remote_code=True).cuda()
 model = model.eval()
 
+baseSDXL = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0",
+                                         torch_dtype=torch.float16,
+                                         use_safetensors=True,
+                                         variant="fp16",
+                                         add_watermarker=False,
+                                         trust_remote_code=True).to("cuda")
+
 
 @async_to_sync
 async def generate_text(input_text: str) -> str:
@@ -49,8 +50,16 @@ async def generate_text(input_text: str) -> str:
 
 @async_to_sync
 async def generate_picture(prompt: str) -> str:
-    payload = PAYLOAD_TEMPLATE.copy()
-    payload['prompt'] = prompt
-    response = requests.post(url=f'{settings.SDW_URL}/sdapi/v1/txt2img', json=payload)
-    r = response.json()
-    return r['images'][0]
+    # payload = PAYLOAD_TEMPLATE.copy()
+    # payload['prompt'] = prompt
+    # response = requests.post(url=f'{settings.SDW_URL}/sdapi/v1/txt2img', json=payload)
+    image = baseSDXL(
+        prompt=prompt,
+        origin_size=(512, 512),
+        target_size=(512, 512),
+        negative_prompt=PAYLOAD_TEMPLATE['negative_prompt'],
+    ).images[0]
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return img_str
