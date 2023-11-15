@@ -6,6 +6,7 @@ A Simple Django Server for ChatGLM and Stable Diffusion application.
 ![](https://img.shields.io/github/license/Gzh0821/Optimization_project)
 ![](https://img.shields.io/github/stars/Gzh0821/glmServer)
 
+- The supporting back-end project here:[chatglm-vue3](https://github.com/VVX94/chatglm-vue3)
 ## Quickstart
 - 安装python 3.11
 - 安装本项目依赖:
